@@ -1,0 +1,190 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Important Question 💌</title>
+  <style>
+    :root { --yesScale: 1; --noScale: 1; }
+    body{
+      margin:0; min-height:100vh; display:flex; align-items:center; justify-content:center;
+      font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif;
+      background: radial-gradient(circle at top, #ffe6f2, #fff);
+      color:#111;
+    }
+    .card{
+      width:min(520px, 92vw);
+      background:#fff;
+      border:1px solid rgba(0,0,0,.06);
+      border-radius:18px;
+      padding:28px;
+      box-shadow: 0 12px 30px rgba(0,0,0,.08);
+      text-align:center;
+      position:relative;
+      overflow:hidden;
+    }
+    h1{ margin:0 0 10px; font-size:26px; }
+    p{ margin:0 0 18px; font-size:16px; opacity:.9; }
+    .btnrow{ display:flex; gap:12px; justify-content:center; margin-top:10px; flex-wrap:wrap; }
+    button{
+      border:0; padding:14px 18px; border-radius:14px; font-size:18px; cursor:pointer;
+      transition: transform .15s ease, opacity .15s ease;
+      user-select:none;
+    }
+    #yesBtn{
+      background:#ff2e83; color:white;
+      transform: scale(var(--yesScale));
+    }
+    #noBtn{
+      background:#f2f2f2; color:#111;
+      transform: scale(var(--noScale));
+    }
+    .tiny { opacity:.55; }
+    .note{ margin-top:14px; font-size:13px; opacity:.65; }
+    .final{
+      margin-top:16px;
+      font-size:18px;
+      font-weight:600;
+    }
+    /* Confetti */
+    .confetti{
+      position:absolute; inset:-20px;
+      pointer-events:none;
+      display:none;
+    }
+    .confetti.show{ display:block; }
+    .piece{
+      position:absolute;
+      width:10px; height:14px;
+      opacity:.9;
+      animation: fall 1.6s linear forwards;
+      border-radius:3px;
+    }
+    @keyframes fall{
+      from{ transform: translateY(-40px) rotate(0deg); }
+      to{ transform: translateY(560px) rotate(720deg); }
+    }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <div id="confetti" class="confetti"></div>
+
+    <h1 id="title">Will you be my Valentine? 💘</h1>
+    <p id="msg">Be honest. But also choose wisely 😌</p>
+
+    <div class="btnrow">
+      <button id="yesBtn">Yes 💖</button>
+      <button id="noBtn">No 🙃</button>
+    </div>
+
+    <div class="note" id="note">P.S. This page is scientifically designed to increase “Yes” conversions.</div>
+    <div class="final" id="final" style="display:none;"></div>
+  </div>
+
+  <script>
+    const title = document.getElementById("title");
+    const msg = document.getElementById("msg");
+    const yesBtn = document.getElementById("yesBtn");
+    const noBtn = document.getElementById("noBtn");
+    const final = document.getElementById("final");
+    const confetti = document.getElementById("confetti");
+
+    // Tuning knobs
+    let yesScale = 1;
+    let noScale = 1;
+    let noCount = 0;
+    let yesCount = 0;
+
+    const noTexts = [
+      "Are you sure? 🥺",
+      "Really sure??",
+      "Like… REALLY?",
+      "Last chance 😭",
+      "I will cry (respectfully).",
+      "Ok this is getting suspicious.",
+      "You know the right answer 😌",
+      "Alright. I’m increasing the Yes button.",
+      "This is a hostile takeover by Yes."
+    ];
+
+    const yesConfirmTexts = [
+      "Wait… are you SURE? 😳",
+      "Final confirmation: 100% sure?",
+      "Pinkie promise sure? 🫶"
+    ];
+
+    function setScales(){
+      document.documentElement.style.setProperty("--yesScale", yesScale.toFixed(3));
+      document.documentElement.style.setProperty("--noScale", noScale.toFixed(3));
+      // Make No feel smaller as it shrinks
+      if (noScale < 0.75) noBtn.classList.add("tiny"); else noBtn.classList.remove("tiny");
+      // If No gets too small, make it harder to click (but still possible)
+      noBtn.style.pointerEvents = (noScale < 0.25) ? "none" : "auto";
+    }
+
+    function launchConfetti(){
+      confetti.innerHTML = "";
+      confetti.classList.add("show");
+      const colors = ["#ff2e83","#ffd166","#06d6a0","#118ab2","#ef476f"];
+      const pieces = 80;
+      for(let i=0;i<pieces;i++){
+        const d = document.createElement("div");
+        d.className = "piece";
+        d.style.left = Math.random()*100 + "%";
+        d.style.top = (-10 - Math.random()*60) + "px";
+        d.style.background = colors[Math.floor(Math.random()*colors.length)];
+        d.style.animationDelay = (Math.random()*0.25) + "s";
+        d.style.transform = `translateY(-40px) rotate(${Math.random()*180}deg)`;
+        confetti.appendChild(d);
+      }
+      setTimeout(()=>confetti.classList.remove("show"), 2000);
+    }
+
+    noBtn.addEventListener("click", () => {
+      noCount++;
+      msg.textContent = noTexts[Math.min(noCount-1, noTexts.length-1)];
+
+      // Grow YES, shrink NO
+      yesScale = Math.min(yesScale + 0.18, 3.2);
+      noScale  = Math.max(noScale  - 0.12, 0.18);
+
+      // Update button labels a bit
+      if (noCount >= 3) yesBtn.textContent = "YES 💘";
+      if (noCount >= 6) noBtn.textContent = "…no?";
+
+      setScales();
+    });
+
+    yesBtn.addEventListener("click", () => {
+      // Do 2-3 "are you sure" confirmations before final
+      if (yesCount < yesConfirmTexts.length) {
+        msg.textContent = yesConfirmTexts[yesCount];
+        title.textContent = "Locking in your answer… 🔒";
+        yesCount++;
+
+        // Make Yes slightly bigger each time for the drama
+        yesScale = Math.min(yesScale + 0.12, 3.4);
+        setScales();
+        return;
+      }
+
+      // Final state
+      launchConfetti();
+      title.textContent = "YAYYYYY 💖";
+      msg.textContent = "Correct answer. You just made my day 😌";
+      final.style.display = "block";
+      final.textContent = "Valentine’s date confirmed ✅";
+
+      // Hide No, keep Yes
+      noBtn.style.display = "none";
+      yesBtn.textContent = "See you Feb 14 😘";
+      yesBtn.disabled = true;
+      yesBtn.style.opacity = "0.9";
+    });
+
+    // init
+    setScales();
+  </script>
+</body>
+</html>
