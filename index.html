@@ -171,20 +171,23 @@
 
       // Final state
       launchConfetti();
-      title.textContent = "YAYYYYY 💖";
-      msg.textContent = "Correct answer. You just made my day 😌";
-      final.style.display = "block";
-      final.textContent = "Valentine’s date confirmed ✅";
+     // Final state
+launchConfetti();
+title.textContent = "YAYYYYY 💖";
+msg.textContent = "See you on 14th Feb 💘";
 
-      // Hide No, keep Yes
-      noBtn.style.display = "none";
-      yesBtn.textContent = "See you Feb 14 😘";
-      yesBtn.disabled = true;
-      yesBtn.style.opacity = "0.9";
-    });
+final.style.display = "block";
+final.innerHTML = `
+  <div style="line-height:1.6">
+    Nee ammu ammu sollaiyila<br>
+    Podatiya poorikkiren saami<br>
+    <strong>En saami 🫶</strong>
+  </div>
+`;
 
-    // init
-    setScales();
-  </script>
-</body>
-</html>
+// Hide No, keep Yes
+noBtn.style.display = "none";
+yesBtn.textContent = "Locked in 💖";
+yesBtn.disabled = true;
+yesBtn.style.opacity = "0.9";
+
